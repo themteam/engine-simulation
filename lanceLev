@@ -1,0 +1,24 @@
+
+global AOA RFA AOE RFE   LmaxAdm LmaxEch 
+global cycle
+% A mettre en global dans votre programme d'appel
+Dadm=0.0368;                % diamètre de soupape d'admission (m)
+Dechap=0.029;             % diamètre de soupape d'échappement (m)
+NbSoupAdm=1;                % Nb de soupape d'admission
+NbSoupEch=1;                % Nb de soupape d'échappement
+LmaxEch=9.196e-3;                  % Levée soupape d'échappement
+LmaxAdm=9.196e-3;                  % Levée soupape d'admission
+RFA=262;                    % retard à la fermeture de la soupape d'admission défini à partir de 0 (°)
+AOA=683; %700                   % avance à l'ouverture de la soupape d'échappement définie à partir de 0 (°)
+RFE=38;%40                    % retard à la fermeture de la soupape d'admission défini à partir de 0 (°)
+AOE=459;                    % retard à l'ouverture de la soupape d'admission défini à partir de 0 (°)
+cycle=720;
+
+
+% figure
+% for teta=1:720
+%     levadm(teta)=fLevee(teta,'adm');
+%        levech(teta)=fLevee(teta,'ech');
+% end
+% teta=1:720;
+% plot(teta,levadm,teta,levech)
