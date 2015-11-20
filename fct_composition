@@ -1,0 +1,24 @@
+function [ Xu,Xb ] = fct_composition(x,y,phi)
+
+%Compositon du mélange gaz frais (GF)/ gas brulés (GB) pour un carburant CxHy à une
+%richesse phi. Retourne la fraction molaiare Xu (GF) et Xb (GB)
+
+    
+    global R Mi  
+    
+    %Données globales
+    R = 8.314;
+    Mi= [1 2 16 32 17 18 28 44 14 28 30 114]*1e-3;
+    psi = 3.76;                 %Proportion o2/N2 dans l'air
+
+    %Mélange de gaz frais
+    ntgf=phi+(x+y/4)*(1+psi);       %nombre de moles de gas frais
+    %X=[H H2 O O2 OH H2O CO CO2 N N2 NO CxHy]
+    Xu=[0 0 0 ((x+y/4)/ntgf) 0 0 0 0 0 (psi*(x+y/4)/ntgf) 0 (phi/ntgf)]';
+
+    % %Exemple Mélange de gaz brulés
+    ntgb=x*phi+y/2*phi+(1-phi)*(x+y/4)+(x+y/4)*psi;     %nombre de moles de gaz brulés
+    
+    Xb=[0 0 0 (1-phi)*(x+y/4)/(ntgb) 0 (y/2*phi)/(ntgb) 0 (x*phi)/(ntgb) 0 psi*(x+y/4)/(ntgb) 0 0]';
+
+end
