@@ -1,0 +1,12 @@
+function out = systemeFunction1(theta,y,flag) 
+    switch flag
+        % calcul de la matrice excitation F
+        case '' 
+            out=MatF1(theta,y);
+
+        %calcul de la fonction masse
+        case 'mass' 
+            out=MatM1(theta,y);
+    end
+end
+
