@@ -1,4 +1,16 @@
 function [dm_ae,dm_ae_bf]=fct_debit(theta,y,type)
+%Fonction qui calcule le débit d'air entrant ou sortant de la chambre de
+%combustion par les soupapes.
+%
+%[dm_ae,dm_ae_bf]=fct_debit(theta,y,type)
+%
+%theta  : angle du vilebrequin représentant le temps
+%y      : vecteur des inconnus [p,T,m,mu,mb,f,mcapa]
+%type   : 'adm' pour le cas admission ou 'ech' pour le cas de l'échappement
+%dm_ae  : débit de masse d'air entrant (resp. sortant) de la chambre dans
+%         le cas admission (resp. echappement)
+%dm_ae_bf: débit de masse d'air sortant (resp. entrant) de la chambre en 
+%          backflow dans le cas admission(reps. sortant)
 
     addpath(fullfile(pwd,'Thermo'));
 
@@ -10,7 +22,6 @@ function [dm_ae,dm_ae_bf]=fct_debit(theta,y,type)
             S= pi*Dadm*lv ;
             CD=fct_CD(lv);
             sct=S*CD;
-            disp(padm);
             if padm > y(1)
                 flagadm = 1;
                 pamont = padm;
@@ -53,13 +64,12 @@ function [dm_ae,dm_ae_bf]=fct_debit(theta,y,type)
             S= pi*Dech*lv ;
             CD=fct_CD(lv);
             sct=S*CD;
-            disp(pech);
             if pech > y(1)
                 flagadm = 1;
                 pamont = pech;
                 Tamont=Tech;
                 paval=y(1);
-                X=Xb
+                X=Xb;
             else
                 flagadm=0;
                 pamont=y(1);

@@ -4,6 +4,7 @@ addpath(fullfile(pwd,'Volume'));
 addpath(fullfile(pwd,'Thermo'));
 addpath(fullfile(pwd,'Debit'));
 addpath(fullfile(pwd,'Validation'));
+addpath(fullfile(pwd,'Systeme'));
 
 %--------------------------------------------------------------------------
 %                           CONSTANTES
@@ -15,43 +16,74 @@ addpath(fullfile(pwd,'Validation'));
 %rmanivel       : rayon de la manivelle [m]
 %lbielle        : longueur de bielle [m]
 %
-%Xu             : vecteur fraction molaire des gaz frais
-%Xb             : vecteur fraction molaire des gaz brûlés
+%Xu             : vecteur fraction molaire des gaz frais [-]
+%Xb             : vecteur fraction molaire des gaz brûlés [-]
 %Mi             : vecteur masse molaire des éléments composants les gaz
-%                 [H H2 O O2 OH H2O CO CO2 N N2 NO CxHy]
-%Mu             : masse d'une mole de gaz frais
-%Mb             : mase d'une mole de gaz brûlé
+%                 [H H2 O O2 OH H2O CO CO2 N N2 NO CxHy] [kg/mol]
+%Mu             : masse d'une mole de gaz frais [kg]
+%Mb             : mase d'une mole de gaz brûlé [kg]
 %
-%R              : constante universelle des gaz parfaits
-%ufu0           :
-%ufb0           : 
+%R              : constante universelle des gaz parfaits [J/(mol.K)]
+%ufu0           : energie interne massique de formation des gaz frais[J/kg]
+%ufb0           : energie interne massique de formation des gaz brûlés[J/kg]
+%
+%N              : régime moteur critique [rpm]
+%Dadm, Dech     : diamètre de la soupape d'admission et d'échappement [m]
+%Tadm, padm     : température et pression à l'admission [K] [Pa]
+%Tech, pech     : température et pression à l'échappement [K] [Pa]
+
+%NbSoupAdm      : nombre de soupape d'admission [-]
+%NbSoupEch      : nombre de soupape d'échappement [-]
+%LmaxEch        : levée max de la soupape d'échappement [m]
+%LmaxAdm        : levée max de la soupape d'admission [m]
+%RFA            : retard à la fermeture de la soupape d'admission défini à 
+%                 partir de 0 [°]
+%AOA            : avance à l'ouverture de la soupape d'échappement définie 
+%                 à partir de 0 [°]
+%RFE            : retard à la fermeture de la soupape d'admission défini 
+%                 à partir de 0 [°]
+%AOE            : retard à l'ouverture de la soupape d'admission défini à 
+%                 partir de 0 [°]
+%cycle          : valeur d'angle représentant le cycle complet du moteur[°]
 %--------------------------------------------------------------------------
 global Vm lambda Cu EpsCompression rmanivel lbielle 
 global Xu Xb Mi Mu Mb
 
 global R ufu0 ufb0
-global Dadm Tadm padm Dech Tech pech
+global N Dadm Tadm padm Dech Tech pech
 
-global N 
+global AOA RFA AOE RFE LmaxAdm LmaxEch NbSoupAdm NbSoupEch cycle
 
 lambda=3.15;
 EpsCompression=9.4;
 Cu=954*10^-6;
 Vm=Cu/(EpsCompression-1);
-M_air=29e-3;
-R=8.314;
+
 [Xu, Xb]= fct_composition(8,18,1);
 Mi= [1 2 16 32 17 18 28 44 14 28 30 114]*1e-3;
 Mu = Mi *Xu;
 Mb = Mi *Xb;
-N = 3000;  %tr/min
-Dadm = 0.0368;
-Dech = 0.0368;
+
+R=8.314;
 [ufu0, ufb0] = fct_uformation();
+
+N = 3000;
+Dadm = 0.0368;
+Dech = 0.029;
 Tadm=300;
 padm=1e5;
-Tech=400;
+Tech=400;    
 pech=1e5;
+
+NbSoupAdm=1;
+NbSoupEch=1;
+LmaxEch=9.196e-3; 
+LmaxAdm=9.196e-3;
+RFA=262;
+AOA=683; %700
+RFE=38;%40
+AOE=459;
+cycle=720;
 %--------------------------------------------------------------------------
 
 % V=linspace(0,0,length(teta));
@@ -97,9 +129,6 @@ pech=1e5;
 % end
 % plot(P)
 
-
-
-
 %Conditions initiales
 P0=3e5;                       %Pa
 T0=400;                       %K
@@ -111,16 +140,9 @@ mb0=f0*m0;                    %kg
 mcapa0=0;                     %kg
 y0=[P0,T0,m0,mu0,mb0,f0,mcapa0]; 
 
-
-        %[dm_adm, dm_adm_bf]=fct_debit(0,y0,'adm');
-        %[dm_ech,dm_ech_bf]=fct_debit(0,y0,'ech');
-
-
 options=odeset('Mass','M(t,y)','RelTol',1e-3,'AbsTol',[1e2,1e-1,1e-7,1e-7,1e-7,1e-2,1e-7]);
 [theta,y]=ode45('systemeFunction1',0:0.5:720,y0,options);
 
-
-lanceLev
 tita=0:0.5:720;
 leve_adm=linspace(0,0,length(tita));
 leve_ech=linspace(0,0,length(tita));

@@ -1,10 +1,19 @@
 function lev=fLevee(teta,type)
+
+%Fonction qui donne la hauteur de la levée de la soupape.
+%
+%lev=fLevee(teta,type)
+%
+%teta   : angle du vilebrequin représentant le temps
+%type   : 'adm' pour admission ou 'ech' pour echappement
+%lev    : hauteur de la levée [m]
+
     %Nous n'allons pas utiliser les valeurs de OCA FCA et LmaxCA  
-    global AOA RFA AOE RFE OCA FCA LmaxAdm LmaxEch LmaxCA
-    global cycle
-    lanceLev;
+    global AOA RFA AOE RFE OCA FCA LmaxAdm LmaxEch LmaxCA cycle
+    
     %global levEch levAdm
     % A revoir problème pour des RFE <720
+    
     teta=mod(teta,cycle);
     tetac=teta;casCA=0;
     switch type

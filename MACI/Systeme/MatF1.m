@@ -3,8 +3,12 @@ function F = MatF1(theta,y)
 %Fonction représentant le second membre F du système à résoudre My=F.
 %Elle est appelée uniquement par la fonction systemeFunction1 et ne peut 
 %être utilisée de façon indépendante.
+%
+%F=MatF1(theta,y)
+%
 %theta : angle du vilebrequin représentant le temps
-%y     : vecteur des inconnus (explication dans systemeFunction1)
+%y     : vecteur des inconnus [p,T,m,mu,mb,f,mcapa]
+%F     : vecteur du second membre du système My=F
 
 %-------------------------------------------------------------------------
     dq_parois = 0; %hypothèse sans transfert de chaleur

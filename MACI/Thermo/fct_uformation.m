@@ -1,7 +1,9 @@
 function [ufu0, ufb0] = fct_uformation ()
 
-%Function qui calcule l'énergie interne à une température de référence
-%Tref=273.15K
+%Fonction qui calcule l'énergie interne massique de formation à une 
+%température de référence Tref=273.15K pour un mélange de gaz frais ou un 
+%mélange de gaz brûlés
+
 	global R Mi Xu Xb 
 
 	Tref = 273.15;

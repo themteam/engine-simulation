@@ -3,8 +3,12 @@ function M = MatM1( theta, y )
 %Fonction représentant la matrice masse M du système à résoudre My=F.
 %Elle est appelée uniquement par la fonction systemeFunction1 et ne peut 
 %être utilisée de façon indépendante.
+%
+%M=matM1(theta,y)
+%
 %theta : angle du vilebrequin représentant le temps
-%y     : vecteur des inconnus (explication dans systemeFunction1)
+%y     : vecteur des inconnus [p,T,m,mu,mb,f,mcapa]
+%M     : matrice masse
    
     global R Mu Mb ufb0 ufu0 Xu Xb
     

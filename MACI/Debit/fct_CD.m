@@ -7,6 +7,6 @@ function CD=fct_CD(lv)
 %CD : coefficient de débit [-]
 %lv : levée de la soupape [m]
 
-    CD = 0.05*lv+0.65;
+    CD = 0.05*10^3*lv+0.65;
 
 end
