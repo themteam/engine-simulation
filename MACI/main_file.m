@@ -51,7 +51,7 @@ addpath(fullfile(pwd,'Echange_Parois'));
 % cycle          : valeur d'angle représentant le cycle complet du moteur[°]
 %--------------------------------------------------------------------------
 global Vm lambda Cu EpsCompression rmanivel lbielle 
-global D_alesage V_mort D_piston course
+global d_alesage d_piston course
  
 global Xu Xb Mi Mu Mb
 
@@ -59,11 +59,15 @@ global R ufu0 ufb0
 global N Dadm Tadm padm Dech Tech pech
 
 global AOA RFA AOE RFE LmaxAdm LmaxEch NbSoupAdm NbSoupEch cycle
-
-lambda=3.15;
+lbielle = 126.8;
+rmanivel = 38.5;
+lambda = lbielle / rmanivel;
 EpsCompression=9.4;
 Cu=954*10^-6;
 Vm=Cu/(EpsCompression-1);
+d_piston = 69.95;
+d_alesage = 70;
+course = 62;
 
 [Xu, Xb]= fct_composition(8,18,1);
 Mi= [1 2 16 32 17 18 28 44 14 28 30 114]*1e-3;
