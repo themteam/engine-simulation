@@ -11,24 +11,27 @@ function F = MatF1(theta,y)
 %F     : vecteur du second membre du système My=F
 
 %-------------------------------------------------------------------------
-    dq_parois = 0; %hypothèse sans transfert de chaleur
+    %dq_parois = 0; %hypothèse sans transfert de chaleur
 %-------------------------------------------------------------------------
-    global Xu Xb Mu Mb Tadm Tech
+    global Xu Xb Mu Mb Tadm Tech ign tps_comb
     
     %X : vecteur fractions molaires du mélange
     X = ((y(4)/Mu)*Xu+(y(5)/Mb)*Xb)./(y(4)/(Mu)+y(5)/(Mb));
-    
     F=zeros(7,1);
+    h_c = fct_coef_echange(y, theta, ign, tps_comb)
     if y(7)<=0
         %Cas mcapa nulle
+        dq_parois = fct_echange_chaleur( h_c, y, theta );
         h_adm=fct_thermo(Xu,Tadm,'h');
         h_cyl=fct_thermo(X,y(2),'h');
-        h_ech=fct_thermo(Xb,Tech,'h'); % hypothèse : uniquement des gaz brûlés à l'échappement ?
+        h_ech=fct_thermo(Xb,Tech,'h'); 
+        % hypothèse : uniquement des gaz brûlés à l'échappement ?
         [~,dv]=fct_volume(theta);
         [dm_adm, dm_adm_bf]=fct_debit(theta,y,'adm');
         [dm_ech,dm_ech_bf]=fct_debit(theta,y,'ech');
         F(1)=-y(1)*dv;
-        F(2)=-y(1)*dv+dq_parois+dm_adm*h_adm+dm_adm_bf*h_cyl+dm_ech*h_cyl+dm_ech_bf*h_ech; 
+        F(2)=-y(1)*dv+dq_parois+dm_adm*h_adm+dm_adm_bf*h_cyl+...
+              dm_ech*h_cyl+dm_ech_bf*h_ech; 
         F(3)=0;    
         F(4)=dm_adm+(1-y(6))*dm_adm_bf+(1-y(6))*dm_ech;       
         F(5)=y(6)*dm_ech+y(6)*dm_adm_bf+dm_ech_bf;
@@ -37,7 +40,9 @@ function F = MatF1(theta,y)
         
     else
         %Cas mcapa positif
-        h_adm=fct_thermo(Xb,Tadm,'h'); % pourquoi T=Tadm ==> hyp brassage température immédiate ? 
+        dq_parois = fct_echange_chaleur( h_c, y, theta );
+        h_adm=fct_thermo(Xb,Tadm,'h'); % pourquoi T=Tadm ==> hyp brassage 
+        % température immédiate ? 
         h_cyl=fct_thermo(X,y(2),'h');
         h_ech=fct_thermo(Xb,Tech,'h'); % hypothèse : uniquement des gaz
         %brûlés à l'échappement ? (à écrire dans la fonction débit pour les

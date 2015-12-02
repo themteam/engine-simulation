@@ -2,6 +2,7 @@ function [ dQ ] = fct_echange_chaleur( h_c, y, theta )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
     global d_alesage Vm d_piston Dadm Dech ign tps_comb
+
     %surfaces
     %1=culasse
     %2=chemise
@@ -34,13 +35,16 @@ function [ dQ ] = fct_echange_chaleur( h_c, y, theta )
         for i = 1 3 4 5
            S(i) = Vu / V * s(i);
         end 
-        % considérant que les gaz en contact avec la paroi sont des gaz frais
+        % considérant que les gaz en contact avec la paroi sont des gaz 
+        % frais
     else
         for i = 1 3 4 5
             S(i) = Vb / V * s(i);
         end
         S(2) = 4 * V / d_alesage; % je pense que ce n'est pas V mais Vb
-        % considérant que les gaz en contact avec la paroi ne sont que des gaz brûlés
+        
+        % considérant que les gaz en contact avec la paroi ne sont que des 
+        % gaz brûlés
     end
     
     dQ = 1 / (6 * N) * sum(h_c * (T_parois - y(2)) * S);

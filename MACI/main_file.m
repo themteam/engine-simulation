@@ -49,6 +49,10 @@ addpath(fullfile(pwd,'Echange_Parois'));
 % AOE            : retard à l'ouverture de la soupape d'admission défini à 
 %                  partir de 0 [°]
 % cycle          : valeur d'angle représentant le cycle complet du moteur[°]
+% ign            : angle d'allumage
+% tps_comb       : 
+% ths            : Precision threshold (seuil) pour la convergence du
+%                  système sans combustion (détermination de P0_)
 %--------------------------------------------------------------------------
 global Vm lambda Cu EpsCompression rmanivel lbielle 
 global d_alesage d_piston course
@@ -59,6 +63,9 @@ global R ufu0 ufb0
 global N Dadm Tadm padm Dech Tech pech
 
 global AOA RFA AOE RFE LmaxAdm LmaxEch NbSoupAdm NbSoupEch cycle
+global ign tps_comb
+global ths 
+
 lbielle = 126.8;
 rmanivel = 38.5;
 lambda = lbielle / rmanivel;
@@ -94,6 +101,11 @@ AOA=683; %700
 RFE=38;%40
 AOE=459;
 cycle=720;
+
+ign = mod(340, cycle);
+tps_comb = 40;
+
+ths = 1e-7;
 %--------------------------------------------------------------------------
 
 % V=linspace(0,0,length(teta));
@@ -139,9 +151,6 @@ cycle=720;
 % end
 % plot(P)
 
-% Precision threshold (seuil)
-ths = 1e-7;
-
 %Conditions initiales
 cond_init.P0 = 3e5;                           %Pa
 cond_init.T0 = 400;                           %K
@@ -152,18 +161,14 @@ cond_init.mu0 = (1 - cond_init.f0) * cond_init.m0;                %kg
 cond_init.mb0 = cond_init.f0 * cond_init.m0;                      %kg
 cond_init.mcapa0 = 0;                         %kg
 
-% Détermination de la fonction P0.
-[theta, M] = fct_P0(cond_init, ths);
-P0 = M(:, 1);
-T0 = M(:, 2);
+ 
+% figure(1);
+% plot(theta_, P0_);
 
-theta_ = 0:0.01:720;
-P0_ = interp1(theta, P0, theta_);
-T0_ = interp1(theta, T0, theta_);
-
-figure(1);
-plot(theta_, P0_);
-
+y0 = [cond_init.P0, cond_init.T0, cond_init.m0, ...
+      cond_init.mu0, cond_init.mb0, cond_init.f0, ...
+      cond_init.mcapa0];
+  
 options=odeset('Mass','M(t,y)','RelTol',1e-3,'AbsTol',[1e2,1e-1,1e-7,1e-7,1e-7,1e-2,1e-7]);
 [theta,y]=ode45('systemeFunction1',0:0.5:720,y0,options);
 
