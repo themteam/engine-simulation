@@ -30,7 +30,7 @@ function [ dQ ] = fct_echange_chaleur( h_c, y, theta )
     s(5) = Dech ^ 2 * pi / 4;
 
     if (mod(theta, 720)>=0 && mod(theta, 720)<=(ign+tps_comb))
-        S(2) = 4 * V / d_alesage; 
+        S(2) = 4 * V / d_alesage; % je pense que ce n'est pas V mais Vu
         for i = 1 3 4 5
            S(i) = Vu / V * s(i);
         end 
@@ -39,7 +39,7 @@ function [ dQ ] = fct_echange_chaleur( h_c, y, theta )
         for i = 1 3 4 5
             S(i) = Vb / V * s(i);
         end
-        S(2) = 4 * V / d_alesage;
+        S(2) = 4 * V / d_alesage; % je pense que ce n'est pas V mais Vb
         % considérant que les gaz en contact avec la paroi ne sont que des gaz brûlés
     end
     
