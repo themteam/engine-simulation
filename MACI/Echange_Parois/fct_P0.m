@@ -1,4 +1,4 @@
-function [ theta, M ] = fct_P0( cond_init, ths )
+function [ P0etPlage,T0etPlage ] = fct_P0( cond_init, ths )
 %FCT_P0 Summary of this function goes here
 %   Detailed explanation goes here
     
@@ -9,22 +9,21 @@ function [ theta, M ] = fct_P0( cond_init, ths )
     y0 = [cond_init.P0, cond_init.T0, cond_init.m0, ...
           cond_init.mu0, cond_init.mb0, cond_init.f0, ...
           cond_init.mcapa0];
-    [theta, M] = ode45('systemeFunction1', 0:0.5:720, y0, options);
-    n=0;
-    disp(max(M(:,5)));
+    [theta, M] = ode45('systemeFunction1', 0:1:720, y0, options);
     while true
-        n=n+1
         % Sauvegarde
         M_prev = M;
         % Itération
         y0 = M(end, :);
-        [theta, M] = ode45('systemeFunction1', 0:0.5:720, y0, options);
-        disp(max(M(:,5)));
+        [theta, M] = ode45('systemeFunction1', 0:1:720, y0, options);
         % Vérification de satisfaction du critère d'arrêt
         if ths > (max(M_prev(:,5)) - max(M(:,5)))
             break;
         end
     end
-    
+    P0etPlage.theta=theta;
+    P0etPlage.pression=M(:,1);
+    T0etPlage.theta=theta;
+    T0etPlage.temperature=M(:,2);
 end
 

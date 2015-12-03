@@ -12,8 +12,6 @@ function [dm_ae,dm_ae_bf]=fct_debit(theta,y,type)
 %dm_ae_bf: débit de masse d'air sortant (resp. entrant) de la chambre en 
 %          backflow dans le cas admission(reps. sortant)
 
-    addpath(fullfile(pwd,'Thermo'));
-
     global padm Tadm pech Tech Xb Xu Dadm Dech Mu Mb N
 
     switch type

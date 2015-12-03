@@ -63,9 +63,8 @@ global R ufu0 ufb0
 global N Dadm Tadm padm Dech Tech pech
 
 global AOA RFA AOE RFE LmaxAdm LmaxEch NbSoupAdm NbSoupEch cycle
-global ign tps_comb
-global ths P0_ T0_
-global pas
+global ign tps_comb P0struct T0struct
+global ths
 
 lbielle = 126.8e-3;
 rmanivel = 38.5e-3;
@@ -107,9 +106,6 @@ ign = 340;
 tps_comb = 40;
 
 ths = 1e-5;
-P0_ = 0;
-T0_ = 0;
-pas = 0.01;
 
 %--------------------------------------------------------------------------
 
@@ -119,62 +115,28 @@ pas = 0.01;
 %     [V(i),dvdta(i)]=fct_volume(teta(i));
 % end
 
-% %Verification de la dérivée
-% for i=1:length(teta)-1
-%     res(i)=V(i+1)-dvdta(i)*(teta(i+1)-teta(i));
-% end
-% subplot(3,1,1);
-% plot(teta,V);
-% grid on
-% subplot(3,1,2)
-% plot(teta(1:end-1),res);
-% grid on
-% subplot(3,1,3);
-% plot(teta,dvdta);
-% grid on
-
-
-% figure;plot(theta,y(:,3))
-% 
-% valODE45_Pression(theta,y(:,3),V,y0(3))
-% 
-% dP=y(:,3);
-% P=zeros(length(dP),1);
-% P(1)=P0;
-% 
-% for i=2:length(theta)
-%     P(i)=P(i-1)+dP(i-1)*(theta(i)-theta(i-1));
-% end
-% plot(P)
-
 %Conditions initiales
 cond_init.P0 = 3e5;                           %Pa
-cond_init.T0 = 400;                           %K
+cond_init.T0 = 500;                           %K
 cond_init.r = fct_thermo(Xb, cond_init.T0, 'r');
 cond_init.m0 = cond_init.P0 * fct_volume(0) / (cond_init.r * cond_init.T0); %kg
 cond_init.f0 = 0.90;
 cond_init.mu0 = (1 - cond_init.f0) * cond_init.m0;                %kg
 cond_init.mb0 = cond_init.f0 * cond_init.m0;                      %kg
-cond_init.mcapa0 = 0;                         %kg
+cond_init.mcapa0 = 1e-6;                         %kg
 
 % Détermination de la fonction P0.
-[theta, M] = fct_P0(cond_init, ths);
-P0 = M(:, 1);
-T0 = M(:, 2);
+[P0struct, T0struct] = fct_P0(cond_init, ths);
 
-theta_ = 0:pas:720;
-P0_ = interp1(theta, P0, theta_);
-T0_ = interp1(theta, T0, theta_); 
+ 
 %%
-figure(1);
-plot(theta_, P0_*10^-5);
 
 y0 = [cond_init.P0,  cond_init.T0, cond_init.m0, ...
       cond_init.mu0, cond_init.mb0, cond_init.f0, ...
       cond_init.mcapa0];
   
 options=odeset('Mass','M(t,y)','RelTol',1e-3,'AbsTol',[1e2,1e-1,1e-7,1e-7,1e-7,1e-2,1e-7]);
-[theta,y]=ode45('systemeFunction1',0:10:7200,y0,options);
+[theta,y]=ode45('systemeFunction1',0:1:380,y0,options);
 
 % tita=0:0.5:720;
 % leve_adm=linspace(0,0,length(tita));
