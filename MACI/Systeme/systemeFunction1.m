@@ -13,6 +13,7 @@ function out = systemeFunction1(theta,y,flag)
 %y(5)  : mb masse totale des gaz brûlés
 %y(6)  : f=mb/m fraction de gaz brûlés
 %y(7)  : mcapa masse de gaz brûlés dans la capacité remplie par backflow
+    
 
     switch flag
         % calcul de la matrice excitation F

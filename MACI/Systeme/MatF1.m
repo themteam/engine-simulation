@@ -11,17 +11,21 @@ function F = MatF1(theta,y)
 %F     : vecteur du second membre du système My=F
 
 %-------------------------------------------------------------------------
-    %dq_parois = 0; %hypothèse sans transfert de chaleur
+    
 %-------------------------------------------------------------------------
-    global Xu Xb Mu Mb Tadm Tech ign tps_comb
+    global Xu Xb Mu Mb Tadm Tech ign tps_comb P0_ T0_
     
     %X : vecteur fractions molaires du mélange
     X = ((y(4)/Mu)*Xu+(y(5)/Mb)*Xb)./(y(4)/(Mu)+y(5)/(Mb));
     F=zeros(7,1);
-    h_c = fct_coef_echange(y, theta, ign, tps_comb)
+    %h_c = fct_coef_echange(y, theta, ign, tps_comb);
     if y(7)<=0
         %Cas mcapa nulle
-        dq_parois = fct_echange_chaleur( h_c, y, theta );
+        if P0_== 0
+            dq_parois = 0; %hypothèse sans transfert de chaleur
+        else
+            dq_parois = fct_echange_chaleur( h_c, y, theta );
+        end
         h_adm=fct_thermo(Xu,Tadm,'h');
         h_cyl=fct_thermo(X,y(2),'h');
         h_ech=fct_thermo(Xb,Tech,'h'); 
@@ -40,7 +44,11 @@ function F = MatF1(theta,y)
         
     else
         %Cas mcapa positif
-        dq_parois = fct_echange_chaleur( h_c, y, theta );
+        if P0_== 0
+            dq_parois = 0; %hypothèse sans transfert de chaleur
+        else
+            dq_parois = fct_echange_chaleur( h_c, y, theta );
+        end
         h_adm=fct_thermo(Xb,Tadm,'h'); % pourquoi T=Tadm ==> hyp brassage 
         % température immédiate ? 
         h_cyl=fct_thermo(X,y(2),'h');

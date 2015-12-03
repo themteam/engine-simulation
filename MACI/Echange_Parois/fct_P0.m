@@ -10,14 +10,18 @@ function [ theta, M ] = fct_P0( cond_init, ths )
           cond_init.mu0, cond_init.mb0, cond_init.f0, ...
           cond_init.mcapa0];
     [theta, M] = ode45('systemeFunction1', 0:0.5:720, y0, options);
+    n=0;
+    disp(max(M(:,5)));
     while true
+        n=n+1
         % Sauvegarde
         M_prev = M;
         % Itération
         y0 = M(end, :);
         [theta, M] = ode45('systemeFunction1', 0:0.5:720, y0, options);
+        disp(max(M(:,5)));
         % Vérification de satisfaction du critère d'arrêt
-        if ths < norm(M - M_prev, 'fro')
+        if ths > (max(M_prev(:,5)) - max(M(:,5)))
             break;
         end
     end

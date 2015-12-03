@@ -64,17 +64,18 @@ global N Dadm Tadm padm Dech Tech pech
 
 global AOA RFA AOE RFE LmaxAdm LmaxEch NbSoupAdm NbSoupEch cycle
 global ign tps_comb
-global ths 
+global ths P0_ T0_
+global pas
 
-lbielle = 126.8;
-rmanivel = 38.5;
+lbielle = 126.8e-3;
+rmanivel = 38.5e-3;
 lambda = lbielle / rmanivel;
 EpsCompression=9.4;
 Cu=954*10^-6;
 Vm=Cu/(EpsCompression-1);
-d_piston = 69.95;
-d_alesage = 70;
-course = 62;
+d_piston = 69.95e-3;
+d_alesage = 70e-3;
+course = 62e-3;
 
 [Xu, Xb]= fct_composition(8,18,1);
 Mi= [1 2 16 32 17 18 28 44 14 28 30 114]*1e-3;
@@ -102,10 +103,14 @@ RFE=38;%40
 AOE=459;
 cycle=720;
 
-ign = mod(340, cycle);
+ign = 340;
 tps_comb = 40;
 
-ths = 1e-7;
+ths = 1e-5;
+P0_ = 0;
+T0_ = 0;
+pas = 0.01;
+
 %--------------------------------------------------------------------------
 
 % V=linspace(0,0,length(teta));
@@ -128,15 +133,6 @@ ths = 1e-7;
 % plot(teta,dvdta);
 % grid on
 
-% %Conditions initiales
-% P0=1e5; %Pa
-% T0=300; %K
-% m0=P0*fct_volume(180)/(r*T0); %kg
-% y0=[m0,T0,P0]; 
-% 
-% options=odeset('Mass','M(t,y)','RelTol',1e-3,'AbsTol',[1e-7, 1e-1, 1e2]);
-% [theta,y]=ode45('systemeFunction',180:0.01:540,y0,options);
-
 
 % figure;plot(theta,y(:,3))
 % 
@@ -156,57 +152,66 @@ cond_init.P0 = 3e5;                           %Pa
 cond_init.T0 = 400;                           %K
 cond_init.r = fct_thermo(Xb, cond_init.T0, 'r');
 cond_init.m0 = cond_init.P0 * fct_volume(0) / (cond_init.r * cond_init.T0); %kg
-cond_init.f0 = 0.95;
+cond_init.f0 = 0.90;
 cond_init.mu0 = (1 - cond_init.f0) * cond_init.m0;                %kg
 cond_init.mb0 = cond_init.f0 * cond_init.m0;                      %kg
 cond_init.mcapa0 = 0;                         %kg
 
- 
-% figure(1);
-% plot(theta_, P0_);
+% Détermination de la fonction P0.
+[theta, M] = fct_P0(cond_init, ths);
+P0 = M(:, 1);
+T0 = M(:, 2);
 
-y0 = [cond_init.P0, cond_init.T0, cond_init.m0, ...
+theta_ = 0:pas:720;
+P0_ = interp1(theta, P0, theta_);
+T0_ = interp1(theta, T0, theta_); 
+%%
+figure(1);
+plot(theta_, P0_*10^-5);
+
+y0 = [cond_init.P0,  cond_init.T0, cond_init.m0, ...
       cond_init.mu0, cond_init.mb0, cond_init.f0, ...
       cond_init.mcapa0];
   
 options=odeset('Mass','M(t,y)','RelTol',1e-3,'AbsTol',[1e2,1e-1,1e-7,1e-7,1e-7,1e-2,1e-7]);
-[theta,y]=ode45('systemeFunction1',0:0.5:720,y0,options);
+[theta,y]=ode45('systemeFunction1',0:10:7200,y0,options);
 
-tita=0:0.5:720;
-leve_adm=linspace(0,0,length(tita));
-leve_ech=linspace(0,0,length(tita));
-for i=1:length(tita)
-    leve_adm(i)=fLevee(tita(i),'adm');
-    leve_ech(i)=fLevee(tita(i),'ech');
-end
+% tita=0:0.5:720;
+% leve_adm=linspace(0,0,length(tita));
+% leve_ech=linspace(0,0,length(tita));
+% for i=1:length(tita)
+%     leve_adm(i)=fLevee(tita(i),'adm');
+%     leve_ech(i)=fLevee(tita(i),'ech');
+% end
+
 figure(2);
 % subplot(3,1,1);
 % plot(tita,leve_adm,tita,leve_ech);
-% subplot(3,1,2);
+subplot(3,1,2);
 plot(theta,y(:,1));
 ylabel('p');
-% subplot(3,1,3);
-% plot(theta,y(:,2));
-% ylabel('T');
+subplot(3,1,3);
+plot(theta,y(:,2));
+ylabel('T');
 
 figure(3);
-% subplot(6,1,1);
-% plot(tita,leve_adm,tita,leve_ech);
-% subplot(6,1,2);
-% plot(theta,y(:,3));
-% ylabel('m');
-% subplot(6,1,3);
-% plot(theta,y(:,4));
-% ylabel('mu');
-% subplot(6,1,4);
-% plot(theta,y(:,5));
-% ylabel('mb');
-% subplot(6,1,5);
+subplot(6,1,1);
+plot(tita,leve_adm,tita,leve_ech);
+subplot(6,1,2);
+plot(theta,y(:,3));
+ylabel('m');
+subplot(6,1,3);
+plot(theta,y(:,4));
+ylabel('mu');
+subplot(6,1,4);
+plot(theta,y(:,5));
+ylabel('mb');
+subplot(6,1,5);
 plot(theta,y(:,6));
 ylabel('f');
-% subplot(6,1,6);
-% plot(theta,y(:,7));
-% ylabel('mcapa');
+subplot(6,1,6);
+plot(theta,y(:,7));
+ylabel('mcapa');
 
 
 
